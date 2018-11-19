@@ -44,6 +44,8 @@ VecPoint2f;
 typedef std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >
 VecTriangle;
 
+typedef std::vector<float > VecQuality;
+
 class MeshMapper {
  public:
   MeshMapper(double laplace_alpha = 0.1,
@@ -55,10 +57,10 @@ class MeshMapper {
 
   int SetPoints(double focal_u, double focal_v,
                  double center_u, double center_v,
-                 uint dim_u, uint dim_v, const VecPoint3f &in_landmarks_3d);
+                 uint dim_u, uint dim_v, const VecPoint3f &in_landmarks_3d, const VecQuality *in_qualities = nullptr);
 
   int SetPoints(const VecPoint2f &in_landmarks_2d,
-                 const VecPoint3f &in_landmarks_3d);
+                 const VecPoint3f &in_landmarks_3d, const VecQuality *in_qualities = nullptr);
 
   bool ComputeMesh();
 
@@ -66,8 +68,8 @@ class MeshMapper {
 
   bool GetMesh(const VecPoint3f *&out_landmarks_3d,
                const VecPoint2f *&out_landmarks_2d,
-               const VecTriangle
-               * &out_triangles); //on the landmarks vector could include unused landmaks by the triangles.(noise)
+               const VecTriangle * &out_triangles,
+               const mesh_based_mapping::VecQuality **out_qualities = nullptr); //on the landmarks vector could include unused landmaks by the triangles.(noise)
 
   void Clear();
 
@@ -80,7 +82,7 @@ class MeshMapper {
 
   void ProjectLandmarks(const double &focalU, const double &focalV,
                         const double &centerU, const double &centerV, const double &dimU,
-                        const double &dimV, const mesh_based_mapping::VecPoint3f &landmarks);
+                        const double &dimV, const mesh_based_mapping::VecPoint3f &landmarks, const VecQuality *in_qualities);
 
   void filteringAndSmoothing(mesh_based_mapping::VecPoint3f &points3d,
                              const std::vector<GEOM_FADE2D::Triangle2 *> &triangles,
@@ -97,6 +99,7 @@ class MeshMapper {
   std::vector<GEOM_FADE2D::Triangle2 *> triangles_;//pointers to fade_ structure
 
   VecPoint3f landmarks_3d_;
+  VecQuality qualities_;
   VecPoint3f filtered_landmarks_3d_output_;
   std::vector<bool> triangle_blacklist_;
 
